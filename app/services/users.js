@@ -12,6 +12,19 @@ const signUp = async user => {
   }
 };
 
+const getUser = async condition => {
+  try {
+    const user = await User.findOne({
+      where: condition
+    });
+    return user;
+  } catch (error) {
+    logger.error(error);
+    throw databaseError('Cannot get user');
+  }
+};
+
 module.exports = {
-  signUp
+  signUp,
+  getUser
 };

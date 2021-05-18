@@ -1,5 +1,5 @@
 const logger = require('../logger');
-const { geekJoke } = require('../../config/axios');
+const { geekJoke } = require('../helpers');
 const { geekJokeError } = require('../errors');
 
 const getRandomQuote = async () => {

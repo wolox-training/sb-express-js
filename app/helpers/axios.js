@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const config = require('../config').external.geekJokeApi;
+const config = require('../../config').external.geekJokeApi;
 
 const geekJoke = axios.create({
   baseURL: config.url,

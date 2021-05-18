@@ -5,6 +5,4 @@ const { getQuote } = require('./controllers/weets');
 exports.init = app => {
   app.get('/health', healthCheck);
   app.get('/weets', getQuote);
-  // app.put('/endpoint/put/path', [], controller.methodPUT);
-  // app.post('/endpoint/post/path', [], controller.methodPOST);
 };

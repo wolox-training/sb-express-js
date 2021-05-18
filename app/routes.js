@@ -8,5 +8,4 @@ exports.init = app => {
   app.get('/health', healthCheck);
   app.get('/weets', getQuote);
   app.post('/users', validatePassword, validateEmail, createUser);
-  // app.post('/endpoint/post/path', [], controller.methodPOST);
 };

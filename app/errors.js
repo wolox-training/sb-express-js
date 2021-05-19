@@ -8,3 +8,6 @@ exports.databaseError = message => internalError(message, exports.DATABASE_ERROR
 
 exports.DEFAULT_ERROR = 'default_error';
 exports.defaultError = message => internalError(message, exports.DEFAULT_ERROR);
+
+exports.GEEK_JOKE_ERROR = 'geek_joke_error';
+exports.geekJokeError = message => internalError(message, exports.GEEK_JOKE_ERROR);

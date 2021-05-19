@@ -1,6 +1,17 @@
 const bcrypt = require('bcryptjs');
 const logger = require('../logger');
 const { badRequestError } = require('../errors');
+const { snakeCaseObjectToCamelCase } = require('../helpers');
+
+const formatInputBody = (req, res, next) => {
+  try {
+    req.body = snakeCaseObjectToCamelCase(req.body);
+    return next();
+  } catch (error) {
+    logger.error(error);
+    return next(error);
+  }
+};
 
 const validateEmail = (req, res, next) => {
   try {
@@ -35,5 +46,6 @@ const validatePassword = (req, res, next) => {
 
 module.exports = {
   validateEmail,
+  formatInputBody,
   validatePassword
 };

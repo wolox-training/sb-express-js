@@ -16,7 +16,7 @@
     "lint-diff": "git diff --diff-filter=ACM --name-only --cached --relative | grep \\\\.js$ | xargs eslint",
     "lint-fix": "npm run lint -- --fix",
     "outdated": "npm outdated --depth 0",
-    "pretest": "npm run lint",
+    "pretest": "npm run lint && NODE_ENV=testing npm run migrations",
     "start-dev": "nodemon --inspect server.js",
     "prestart-dev": "npm run lint",
     "migrations": "sequelize db:migrate",

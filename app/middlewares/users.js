@@ -37,7 +37,7 @@ const validatePassword = (req, res, next) => {
       req.body.password = hash;
       return next();
     }
-    throw badRequestError('Password the password must have a minimum of 8 alphanumeric characters');
+    throw badRequestError('The password must have a minimum of 8 alphanumeric characters');
   } catch (error) {
     logger.error(error);
     return next(error);

@@ -1,35 +1,7 @@
 module.exports = {
   '/users': {
-    get: {
-      tags: ['CRUD operations'],
-      description: 'Get users',
-      operationId: 'getUsers',
-      parameters: [
-        {
-          name: 'page',
-          in: 'query',
-          schema: {
-            type: 'integer',
-            default: 1
-          },
-          required: false
-        }
-      ],
-      responses: {
-        200: {
-          description: 'Users were obtained',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/Users'
-              }
-            }
-          }
-        }
-      }
-    },
     post: {
-      tags: ['CRUD operations'],
+      tags: ['User operations'],
       description: 'Create user',
       operationId: 'createUser',
       parameters: [],
@@ -45,7 +17,22 @@ module.exports = {
       },
       responses: {
         200: {
-          description: 'New user was created'
+          description: 'New user was created',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/UserCreated'
+              },
+              example: {
+                id: 1,
+                name: 'Santiago',
+                last_name: 'Bedoya',
+                email: 'santiago.bedoyaa@wolox.com.ar',
+                updated_at: '2021-05-24T21:33:22.576Z',
+                created_at: '2021-05-24T21:33:22.576Z'
+              }
+            }
+          }
         },
         400: {
           description: 'Invalid parameters',
@@ -55,8 +42,22 @@ module.exports = {
                 $ref: '#/components/schemas/Error'
               },
               example: {
-                message: 'User´s email already exists',
-                internal_code: 'invalid_parameters'
+                message: 'The password must have a minimum of 8 alphanumeric characters',
+                internal_code: 'validation_error'
+              }
+            }
+          }
+        },
+        503: {
+          description: 'Error creating a new user',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Error'
+              },
+              example: {
+                message: "User with email 'santiago.bedoya@wolox.com.ar' already exists",
+                internal_code: 'database_error'
               }
             }
           }

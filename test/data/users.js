@@ -1,6 +1,6 @@
 const user = {
   name: 'Santiago',
-  lastName: 'Bedoya',
+  last_name: 'Bedoya',
   password: 'santiago123',
   email: 'santiago.bedoya@wolox.co'
 };

@@ -30,7 +30,7 @@ describe('POST /users', () => {
         const { id, name, last_name: lastName, email } = body;
         expect(id).toBe(1);
         expect(name).toBe(userCopied.name);
-        expect(lastName).toBe(userCopied.lastName);
+        expect(lastName).toBe(userCopied.last_name);
         expect(email).toBe(userCopied.email);
         done();
       });
@@ -59,7 +59,7 @@ describe('POST /users', () => {
       .expect('Content-Type', /json/)
       .expect(400)
       .then(response => {
-        expect(response.body.message).toBe('The password must have a minimum of 8 alphanumeric characters');
+        expect(response.body.message).toBe('The password only allows alphanumeric characters');
         expect(response.body.internal_code).toBe('validation_error');
         done();
       });
@@ -118,10 +118,10 @@ describe('POST /users', () => {
       .send(userCopied)
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
-      .expect(503)
+      .expect(400)
       .then(response => {
-        expect(response.body.message).toBe('Cannot create user');
-        expect(response.body.internal_code).toBe('database_error');
+        expect(response.body.message).toBe('name is required');
+        expect(response.body.internal_code).toBe('validation_error');
         done();
       });
   });

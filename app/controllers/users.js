@@ -42,7 +42,20 @@ const signIn = async (req, res, next) => {
   }
 };
 
+const listUsers = async (req, res, next) => {
+  try {
+    const { size: limit, page: offset } = req.query;
+    const users = await usersService.getUsers(limit, offset, {});
+    logger.info('Users returned');
+    return res.status(200).send(camelCaseObjectToSnakeCase(users));
+  } catch (error) {
+    logger.error(error);
+    return next(error);
+  }
+};
+
 module.exports = {
   signIn,
+  listUsers,
   createUser
 };

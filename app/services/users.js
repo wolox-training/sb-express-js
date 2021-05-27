@@ -2,6 +2,8 @@ const logger = require('../logger');
 const { databaseError } = require('../errors');
 const { users: User } = require('../models');
 
+const defaultUserAttributes = ['id', 'name', 'lastName', 'email', 'createdAt', 'updatedAt'];
+
 const signUp = async user => {
   try {
     const createdUser = await User.create(user);
@@ -24,7 +26,24 @@ const getUser = async condition => {
   }
 };
 
+const getUsers = async (limit, offset, condition, attributes = defaultUserAttributes) => {
+  try {
+    const users = await User.findAll({
+      limit,
+      offset,
+      where: condition,
+      attributes,
+      raw: true
+    });
+    return users;
+  } catch (error) {
+    logger.error(error);
+    throw databaseError('Cannot get the list of users');
+  }
+};
+
 module.exports = {
   signUp,
-  getUser
+  getUser,
+  getUsers
 };

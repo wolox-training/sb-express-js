@@ -19,6 +19,17 @@ const CreateUserSchema = Joi.object({
     })
 });
 
+const UserCredentials = Joi.object({
+  email: Joi.string()
+    .regex(/^[^_\W]+\.[^_\W]+@wolox(.com)?.(co|me|cl|ar)$/i)
+    .required()
+    .messages({
+      'string.pattern.base': 'Email entered does not comply with the Wolox emails format'
+    }),
+  password: Joi.string().required()
+});
+
 module.exports = {
-  CreateUserSchema
+  CreateUserSchema,
+  UserCredentials
 };

@@ -126,3 +126,79 @@ describe('POST /users', () => {
       });
   });
 });
+
+describe('POST /users/sessions', () => {
+  it('Sign in successful', done => {
+    const { email, password } = user;
+    request(app)
+      .post('/users/sessions')
+      .send({ email, password })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then(({ body: { token } }) => {
+        expect(token).toBeTruthy();
+        done();
+      });
+  });
+
+  it('Sign in failed - Wrong password', done => {
+    const { email } = user;
+    request(app)
+      .post('/users/sessions')
+      .send({ email, password: shortPassword })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then(({ body: { message, internal_code } }) => {
+        expect(message).toBe('Email or password is wrong');
+        expect(internal_code).toBe('validation_error');
+        done();
+      });
+  });
+
+  it('Sign in failed - Non format email', done => {
+    const { password } = user;
+    request(app)
+      .post('/users/sessions')
+      .send({ email: nonFormatEmail, password })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then(({ body: { message, internal_code } }) => {
+        expect(message).toBe('Email entered does not comply with the Wolox emails format');
+        expect(internal_code).toBe('validation_error');
+        done();
+      });
+  });
+
+  it('Sign in failed - Non extistent email', done => {
+    const { password } = user;
+    request(app)
+      .post('/users/sessions')
+      .send({ email: anotherEmail, password })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then(({ body: { message, internal_code } }) => {
+        expect(message).toBe('Email or password is wrong');
+        expect(internal_code).toBe('validation_error');
+        done();
+      });
+  });
+
+  it('Sign in failed - Missing data', done => {
+    const { email } = user;
+    request(app)
+      .post('/users/sessions')
+      .send({ email })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then(({ body: { message, internal_code } }) => {
+        expect(message).toBe('password is required');
+        expect(internal_code).toBe('validation_error');
+        done();
+      });
+  });
+});

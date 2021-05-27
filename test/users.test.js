@@ -1,16 +1,27 @@
+/* eslint-disable max-lines */
 const request = require('supertest');
+const { sign } = require('jsonwebtoken');
 
 const app = require('../app');
+const { users } = require('../app/services');
+const { snakeCaseObjectToCamelCase } = require('../app/helpers');
+
+const {
+  common: { api, session }
+} = require('../config');
+
 const {
   user,
   anotherEmail,
   nonFormatEmail,
+  expiredToken,
   externalMail,
   shortPassword,
   nonAlphaNumericPassword
 } = require('./data/users');
 
 const copyUser = () => ({ ...user });
+const getFakeToken = name => sign({ sub: name }, session.secret, { expiresIn: session.token_exp });
 
 describe('POST /users', () => {
   let userCopied = '';
@@ -197,6 +208,97 @@ describe('POST /users/sessions', () => {
       .expect(400)
       .then(({ body: { message, internal_code } }) => {
         expect(message).toBe('password is required');
+        expect(internal_code).toBe('validation_error');
+        done();
+      });
+  });
+});
+
+describe('GET /users', () => {
+  const fakeToken = getFakeToken('santiago');
+
+  beforeAll(async () => {
+    const copiedUser = copyUser();
+    copiedUser.email = anotherEmail;
+    await users.signUp(snakeCaseObjectToCamelCase(copiedUser));
+  });
+
+  it('List users successful - Without pagination params', done => {
+    request(app)
+      .get('/users')
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${fakeToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.length).toBe(2);
+        done();
+      });
+  });
+
+  it('List users successful - With pagination params', done => {
+    const size = 1;
+    request(app)
+      .get(`/users?size=${size}&page=0`)
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${fakeToken}`)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.length).toBe(size);
+        done();
+      });
+  });
+
+  it('List users failed - Without sending token', done => {
+    request(app)
+      .get('/users')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then(({ body: { message, internal_code } }) => {
+        expect(message).toBe('Must send Authorization Bearer token');
+        expect(internal_code).toBe('validation_error');
+        done();
+      });
+  });
+
+  it('List users failed - Sending an expired token', done => {
+    request(app)
+      .get('/users')
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${expiredToken}`)
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then(({ body: { message, internal_code } }) => {
+        expect(message).toBe('Jwt expired');
+        expect(internal_code).toBe('validation_error');
+        done();
+      });
+  });
+
+  it('List users failed - Bad pagination params, page size greater than max page size', done => {
+    request(app)
+      .get(`/users?size=${api.maxPageSize + 1}&page=1`)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then(({ body: { message, internal_code } }) => {
+        expect(message).toBe(`size must be less than or equal to ${api.maxPageSize}`);
+        expect(internal_code).toBe('validation_error');
+        done();
+      });
+  });
+
+  it('List users failed - Sending a non bearer token', done => {
+    request(app)
+      .get('/users')
+      .set('Accept', 'application/json')
+      .set('Authorization', `${fakeToken}`)
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .then(({ body: { message, internal_code } }) => {
+        expect(message).toBe('No Bearer token sended in the request');
         expect(internal_code).toBe('validation_error');
         done();
       });

@@ -34,11 +34,13 @@ const config = {
     api: {
       bodySizeLimit: process.env.API_BODY_SIZE_LIMIT,
       parameterLimit: process.env.API_PARAMETER_LIMIT,
-      port: process.env.PORT
+      port: process.env.PORT,
+      maxPageSize: Number(process.env.MAX_PAGE_SIZE)
     },
     session: {
       header_name: 'authorization',
-      secret: process.env.NODE_API_SESSION_SECRET
+      secret: process.env.NODE_API_SESSION_SECRET,
+      token_exp: process.env.TOKEN_EXPIRATION_TIME
     },
     headers: {
       apiDate: process.env.API_DATE || 'X-API-Date',

@@ -37,8 +37,14 @@ const isLoggedIn = (req, res, next) => {
     const token = req.headers.authorization;
     if (!token) throw badRequestError('Must send Authorization Bearer token');
     if (!token.startsWith('Bearer')) throw badRequestError('No Bearer token sended in the request');
-    const decoded = verify(token.split(' ')[1], secret);
-    req.locals = decoded;
+
+    try {
+      const decoded = verify(token.split(' ')[1], secret);
+      req.locals = decoded;
+    } catch (error) {
+      throw badRequestError('Jwt expired');
+    }
+
     return next();
   } catch (error) {
     logger.error(error);

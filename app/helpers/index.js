@@ -1,5 +1,10 @@
+const { isJSON } = require('./json');
 const { geekJoke } = require('./axios');
+const { camelCaseObjectToSnakeCase, snakeCaseObjectToCamelCase } = require('./caseConverter');
 
 module.exports = {
-  geekJoke
+  isJSON,
+  geekJoke,
+  camelCaseObjectToSnakeCase,
+  snakeCaseObjectToCamelCase
 };
